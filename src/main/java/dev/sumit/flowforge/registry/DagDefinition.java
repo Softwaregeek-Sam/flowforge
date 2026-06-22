@@ -1,5 +1,6 @@
 package dev.sumit.flowforge.registry;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -13,6 +14,7 @@ public class DagDefinition {
 
     private String scheduleCron;
 
+    @JsonProperty("is_active")
     private boolean isActive = true;
 
     private List<TaskDefinition> tasks;

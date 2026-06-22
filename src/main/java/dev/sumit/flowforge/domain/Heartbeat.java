@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 public class Heartbeat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "task_run_id")
+    private Long taskRunId;
 
     @Column(name = "worker_id", nullable = false)
     private String workerId;

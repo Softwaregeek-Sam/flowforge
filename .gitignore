@@ -1,11 +1,14 @@
 HELP.md
 target/
 AGENTS.md
+REGISTRY_AUDIT_REPORT.md
 
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 application.yml
+
+
 
 
 ### STS ###

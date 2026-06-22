@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flowforge_test
+    username: postgres
+    password: nandini
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+
+
+flowforge:
+  registry:
+    dag-directory: ./src/test/resources/dags
+
+  scheduler:
+    interval-seconds: 30
+
+  monitor:
+    heartbeat-timeout-seconds: 60
+    check-interval-seconds: 10
+
+  worker:
+    heartbeat-interval-seconds: 15
+    queue-key: flowforge:test:tasks

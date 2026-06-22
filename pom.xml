@@ -21,6 +21,7 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -126,6 +127,14 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        -Duser.timezone=Asia/Kolkata
+                    </argLine>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 

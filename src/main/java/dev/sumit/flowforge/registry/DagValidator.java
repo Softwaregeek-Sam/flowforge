@@ -1,11 +1,16 @@
 package dev.sumit.flowforge.registry;
 
 
-import java.awt.*;
+import org.springframework.stereotype.Component;
+
+
 import java.util.*;
 import java.util.List;
 
+@Component
 public class DagValidator {
+
+    private enum Color { WHITE, GRAY, BLACK };
     public void validate(DagDefinition dag) {
        validateTasksNotEmpty(dag);
        validateTaskNameUnique(dag);

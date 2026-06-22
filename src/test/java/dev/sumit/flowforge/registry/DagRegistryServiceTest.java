@@ -5,6 +5,7 @@ import dev.sumit.flowforge.domain.DagTask;
 import dev.sumit.flowforge.domain.repositories.DagRepository;
 import dev.sumit.flowforge.domain.repositories.DagTaskRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +46,7 @@ public class DagRegistryServiceTest {
     private Path tempDir;
 
     private Path createTempDagDir() throws IOException {
-        tempDir = Files.createTempDirectory("flowforge-test-dags");
+        tempDir = Files.createTempDirectory("flowforge-test-dags-");
         return tempDir;
     }
 
@@ -57,11 +59,14 @@ public class DagRegistryServiceTest {
         return file;
     }
 
+
+
+
     @AfterEach
     void cleanUp() throws  IOException{
         jdbcTemplate.update("DELETE FROM dag_task_dependency", Map.of());
         jdbcTemplate.update("DELETE FROM dag_task", Map.of());
-        jdbcTemplate.update("DELETE FROM dag_task", Map.of());
+        jdbcTemplate.update("DELETE FROM dag", Map.of());
 
         if (tempDir != null) {
             Files.walk(tempDir)
@@ -98,7 +103,7 @@ public class DagRegistryServiceTest {
               - check_disk
         """);
 
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
 
         Dag dag = dagRepository.findByName("db_backup")
@@ -125,7 +130,7 @@ public class DagRegistryServiceTest {
 
         Integer depCount = jdbcTemplate.queryForObject("""
                  SELECT COUNT(*) FROM dag_task_dependency
-                 WHERE dag_task_id = :dumbDbId
+                 WHERE dag_task_id = :dumpDbId
                  AND depends_on_task_id = :checkDiskId
                 """,
                 new MapSqlParameterSource()
@@ -144,6 +149,8 @@ public class DagRegistryServiceTest {
 
     }
 
+    @Test
+    @DisplayName("should not insert duplicate dag on second load")
     void should_not_insert_duplicate_dag_on_second_load() throws Exception{
          Path dir = createTempDagDir();
         writeDagYaml(dir, "backup.yml", """
@@ -162,7 +169,7 @@ public class DagRegistryServiceTest {
               - check_disk
         """);
 
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
         Dag dagAfterFirstLoad = dagRepository.findByName("db_backup")
                 .orElseThrow( () -> new AssertionError(
@@ -185,7 +192,7 @@ public class DagRegistryServiceTest {
                 .as("First load must exactly 1 dependency before second load runs")
                 .isEqualTo(1);
 
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
         List<Dag> allDags = dagRepository.findAll();
         assertThat(allDags)
@@ -200,7 +207,7 @@ public class DagRegistryServiceTest {
 
         assertThat(taskAfterSecondLoad)
                 .extracting(DagTask::getTaskName)
-                .containsExactlyInAnyOrder("check_dist", "dumb_db");
+                .containsExactlyInAnyOrder("check_disk", "dump_db");
 
         Integer depsAfterSecondLoad = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM dag_task_dependency",
@@ -225,7 +232,7 @@ public class DagRegistryServiceTest {
                 config:
                   command: "df -h /"
             """);
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
         // Updated version
         writeDagYaml(dir, "backup.yml", """
@@ -245,7 +252,7 @@ public class DagRegistryServiceTest {
               - check_disk
         """);
 
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
         Dag dag = dagRepository.findByName("db_backup")
                 .orElseThrow(() ->
@@ -266,7 +273,7 @@ public class DagRegistryServiceTest {
                         DagTask::getId
                 ));
 
-        Long checkDiskId = taskNameToId.get("check_dist");
+        Long checkDiskId = taskNameToId.get("check_disk");
         Long dumpDbId = taskNameToId.get("dump_db");
 
         Integer dependencyCount = jdbcTemplate.queryForObject(
@@ -324,9 +331,9 @@ public class DagRegistryServiceTest {
                   command: "echo one"
             """);
 
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
-        assertThat(dagRepository.findByName("cyclid_dag")).isEmpty();
+        assertThat(dagRepository.findByName("cyclic_dag")).isEmpty();
 
         assertThat(dagRepository.findByName("valid_dag")).isPresent();
     }
@@ -339,7 +346,7 @@ public class DagRegistryServiceTest {
         // No YAML files
 
         // Should not throw
-        registryService.loadFromDirectory(dir.toString());
+        registryService.loadDag(dir.toString());
 
         assertThat(dagRepository.findAll()).isEmpty();
     }

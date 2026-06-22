@@ -22,7 +22,7 @@ public class FlowForgeProperties {
     @Getter
     @Setter
     public static class Registry{
-        @NotBlank(message = "flowforge.registry.dag-registry must not be blank")
-        private String dagRegistry = "./dags";
+        @NotBlank(message = "flowforge.registry.dag-directory must not be blank")
+        private String dagDirectory = "./dags";
     }
 }

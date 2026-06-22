@@ -14,6 +14,10 @@ public class FlowforgeApplication {
 
 	public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
+
+        System.out.println("Timezone = "
+                + TimeZone.getDefault().getID());
+
         SpringApplication.run(FlowforgeApplication.class, args);
 	}
 
