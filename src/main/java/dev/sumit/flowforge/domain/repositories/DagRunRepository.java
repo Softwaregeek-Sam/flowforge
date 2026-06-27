@@ -5,9 +5,7 @@ import dev.sumit.flowforge.domain.enums.DagRunStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 
@@ -18,4 +16,7 @@ public interface DagRunRepository extends JpaRepository<DagRun, Long> {
     Optional<DagRun> findByRunId(UUID runId);
 
     List<DagRun> findByDagIdOrderByTriggeredAtDesc(Long dagId);
+
+
+    Optional<DagRun> findFirstByDagIdAndStatusIn(Long dagId, Set<DagRunStatus> statuses);
 }
