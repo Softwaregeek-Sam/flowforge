@@ -1,9 +1,14 @@
 package dev.sumit.flowforge.scheduler;
 
-import java.time.Instant;
+import dev.sumit.flowforge.domain.TaskRun;
+import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.List;
+
+@Service
 public class DagStateManager {
-    public Object progressActiveDagRuns(Long aLong, Instant now) {
+    public List<TaskRun> progressActiveDagRuns(Long aLong, Instant now) {
         return null;
     }
 }

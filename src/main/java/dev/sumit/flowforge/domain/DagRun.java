@@ -2,7 +2,7 @@ package dev.sumit.flowforge.domain;
 
 import dev.sumit.flowforge.domain.enums.DagRunStatus;
 import dev.sumit.flowforge.domain.enums.TriggerType;
-import dev.sumit.flowforge.domain.enums.TriggeredType;
+
 import jakarta.persistence.*;
 import lombok.*;
 
