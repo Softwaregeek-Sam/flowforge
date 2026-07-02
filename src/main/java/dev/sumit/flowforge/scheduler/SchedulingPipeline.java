@@ -16,7 +16,7 @@ public class SchedulingPipeline {
 
     private final DagRunScheduler dagRunScheduler;
 
-    private DagStateManager dagStateManager;
+    private final DagStateManager dagStateManager;
 
     @Transactional
     public List<TaskRun> execute(SchedulableDag dag, Instant now) {

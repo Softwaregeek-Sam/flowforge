@@ -9,6 +9,7 @@ import java.util.List;
 @Service
 public class DagStateManager {
     public List<TaskRun> progressActiveDagRuns(Long aLong, Instant now) {
-        return null;
+
+        return List.of();
     }
 }
